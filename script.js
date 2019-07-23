@@ -141,6 +141,7 @@ function createMap(){
 
 
 	// Define the possible tile layers you'd like to add.
+
 	var Esri_WorldTerrain = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Terrain_Base/MapServer/tile/{z}/{y}/{x}', {
 		attribution: 'Tiles &copy; Esri &mdash; Source: USGS, Esri, TANA, DeLorme, and NPS',
 		maxZoom: 13
@@ -168,6 +169,7 @@ function createMap(){
 	// |  Define the map  |
 	// ====================
 	// ... and set any options like zoom restrictions, scroll boundaries, attributions and controls, and add your tiles.
+
 	map = L.map('map', {
 		minZoom: 2,
 		maxZoom: 7,
@@ -189,6 +191,7 @@ function createMap(){
 
 	// ... or you specify a coordinate box (e.g. the coordinates that bound the United States)
 	// A coordinate box is an array with two coordinate arrays inside of it.
+
 	var defaultBounds = [
 		[49, -65],
 		[16, -135]
@@ -219,7 +222,8 @@ function createMap(){
 		iconAnchor: [8, 8],
 		popupAnchor: [0, -4]
 	})
-	var currentIcon = iconRed
+
+	var currentIcon = iconRed;
 
 
 
@@ -238,13 +242,13 @@ function createMap(){
 		// Leaflet expects coordinates to be stored as an array in the format of [lat, lng].
 		// The coordinates from  the spreadsheet come over as a string.
 		// We'll use the JavaScript method `.split()` to split the the string into an array.
-		var coordinatesString = myData[i].coordinates;
-		var currentCoordinatesArray = coordinatesString.split(", ")
 
+		var coordinatesString = myData[i].coordinates; // We created a variable to temporarily store the string.
+		var currentCoordinatesArray = coordinatesString.split(", "); // We're splitting the string into an array. (Anywhere there's a ", ", it'll add a new value to the array.)
 
 
 		// Reset the default icon.
-		currentIcon = iconRed
+		currentIcon = iconRed;
 
 		// Check the party affiliation, if the current politician is a Democrat we'll switch the icon. 
 		if (myData[i].affiliation == "Democrat"){
@@ -263,7 +267,7 @@ function createMap(){
 				icon: currentIcon,
 				name: myData[i].name, // this is custom parameter. You can add more as you need.
 				currentNumber: i,
-			}).bindPopup(popupWindowMarkup)
+			}).bindPopup(popupWindowMarkup);
 
 
 		// Add the custom onClick() function for the marker.
@@ -271,7 +275,7 @@ function createMap(){
 
 
 		// Add the current marker to the layer group.
-		layerGroup.addLayer(marker)
+		layerGroup.addLayer(marker);
 
 	}
 
@@ -279,7 +283,7 @@ function createMap(){
 		console.log("clicked marker. Name: " + e.target.options.name);
 
 		// When the user clicks on the marker zoom
-		mapData.setView(e.target.getLatLng(), 5);
+		map.setView(e.target.getLatLng(), 5);
 	}
 
 }
