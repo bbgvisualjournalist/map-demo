@@ -23,6 +23,12 @@
 			font-family: Arial, sans-serif;
 		}
 
+		.voa__content {
+			margin: 0 auto;
+			max-width: 1280px;
+			width: 100%;
+		}
+
 		.voa__map-container {
 			background-color: #F5F5F5 !important;
 			min-height: 450px;
@@ -31,30 +37,23 @@
 	</style>
 
 </head>
-
-
-
-
-
 <body>
 
+	<div class="voa__content">
 
-<div style="margin: 0 auto; max-width: 1280px; width: 100%;">
+		<h1>Map demo</h1>
 
-	<h1>Map test</h1>
-	<p>Here's a simple mockup showing how to use jQuery, TabletopJS and Leaflet to load in some external data and then map it. Open the browser's console window and you can watch the data get loaded. (The code is liberally commented.)</p>
-
-
-	<!-- here's the div where we'll stick the map when we're ready to add it to the page -->
-	<div id="map" class="voa__map-container"></div>
+		<p>Here's a mockup showing how to use jQuery, TabletopJS and Leaflet to load in some external data and then map it. Open the browser's console window and you can watch the data get loaded. (The code is liberally commented.)</p>
 
 
-	<!-- here's the div where we'll loop through the candidates and add their names -->
-	<div id="candidates"></div>
-
-</div>
+		<!-- here's the div where we'll stick the map when we're ready to add it to the page -->
+		<div id="map" class="voa__map-container"></div>
 
 
+		<!-- here's the div where we'll loop through the politicians and add their names -->
+		<div id="politicians"></div>
+
+	</div>
 
 
 
@@ -64,39 +63,36 @@
 
 
 
+	<!-- You could put your JS in a separate file or you can put it directly in the HTML -->
+
+	<script type="text/javascript">
+
+		// =============================================
+		// |  Define your global variables at the top. |
+		// =============================================
+
+		// Variables defined here are "global", which means you'll have access to them throughout your code.
+		var myData;
+
+		var map;
+		var marker;
+		var layerGroup;
+		var iconDefault;
+		var tiles = [];
+
+		var defaultBounds = [
+			[49, -65],
+			[16, -135]
+		]
 
 
+		// Define your spreadsheet ID
+		var public_spreadsheet_url = '14G3g_Jpyih4AudKKJu4i_YWSYBBJxKBlzjVATdzgDic';
 
-<!-- You could put your JS in a separate file or you can put it directly in the HTML -->
-
-<script type="text/javascript">
-
-	// =============================================
-	// |  Define your global variables at the top. |
-	// =============================================
-
-	// Variables defined here are "global", which means you'll have access to them throughout your code.
-	var myData;
-
-	var map;
-	var marker;
-	var layerGroup;
-	var iconDefault;
-	var tiles = [];
-
-	var defaultBounds = [
-		[49, -65],
-		[16, -135]
-	]
-
-
-	// Define your spreadsheet ID
-	var public_spreadsheet_url = '14G3g_Jpyih4AudKKJu4i_YWSYBBJxKBlzjVATdzgDic';
-
-	// This is the string of characters in the URL of a Google Spreadsheet.
-	// You have to "publish" the spreadsheet first in order for it to be public and accessible to your code.
-	// To publish: >File>Publish to the web> and select "Entire document"
-	// (Obviously don't do this with sensitive data.)
+		// This is the string of characters in the URL of a Google Spreadsheet.
+		// You have to "publish" the spreadsheet first in order for it to be public and accessible to your code.
+		// To publish: >File>Publish to the web> and select "Entire document"
+		// (Obviously don't do this with sensitive data.)
 
 
 
@@ -105,102 +101,98 @@
 
 
 
-	// ==============================================
-	// |  Wait for the page to load, then do stuff  |
-	// ==============================================
+		// ==============================================
+		// |  Wait for the page to load, then do stuff  |
+		// ==============================================
 
-	// This is a basic jQuery function that waits until the page (but not the images) has loaded.
-	// After the page is loaded, it'll execute whatever code you have inside of it.
+		// This is a basic jQuery function that waits until the page (but not the images) has loaded.
+		// After the page is loaded, it'll execute whatever code you have inside of it.
 
-	$(document).ready(function(){
-		console.log("Everything is loaded and we're ready to do stuff\n\n");
+		$(document).ready(function(){
+			console.log("Everything is loaded and we're ready to do stuff\n\n");
 
-		// Let's start by calling the function to try to load the spreadsheet data.
-		// If you scroll down you can see where we define that function.
-		loadSpreadsheet();
-	});
-
-
+			// Let's start by calling the function to try to load the spreadsheet data.
+			// If you scroll down you can see where we define that function.
+			loadSpreadsheet();
+		});
 
 
 
 
 
-	// ============================
-	// |  Basic tabletopJS setup  |
-	// ============================
-	function loadSpreadsheet() {
-		console.log("Trying to load spreadsheet.\n(cross your fingers)\n\n")
-
-		// Here's where we try to initialize Tabletop.js
-		// We defined that public spreadsheet up at the top 
-		// (but we could just paste that string where it says "public_spreadsheet_url")
-
-		// If tabletop succesfully connects with the spreadsheet, it'll execute the "callback" function and pass the data to it.
-		Tabletop.init( { key: public_spreadsheet_url,
-			callback: showInfo,
-			simpleSheet: true } )
-	}
 
 
-	// Here's where you'll decide what you want to do with the loaded data.
-	function showInfo(data) {
-		console.log("Data loaded!!! Huzzah!!!\n\n")
+		// ============================
+		// |  Basic tabletopJS setup  |
+		// ============================
+		function loadSpreadsheet() {
+			console.log("Trying to load spreadsheet.\n(cross your fingers)\n\n")
 
-		console.log("The data is returned as a JSON object (technically, it's an array of JSON objects)")
-		console.log("Here's what the data looks like:")
-		console.log(data);
+			// Here's where we try to initialize Tabletop.js
+			// We defined that public spreadsheet up at the top 
+			// (but we could just paste that string where it says "public_spreadsheet_url")
 
-
-
-		console.log("\n\n");
-		console.log("Each row in the spreadsheet is a separate JSON object in the array.")
-		console.log("You can look at specific rows in the data by referencing it by number: console.log(data[3])")
-		console.log(data[3]);
-		console.log("\n\n");
-
-
-
-		// Let's loop through the data and see what we can do.
-		for (var i = 0; i < data.length; i++){
-			console.log(data[i].name + " — " + data[i].state );
-
-
-			// Using jQuery we can add a paragraph with each candidate to the HTML. Here's how:
-
-			// 1. Define the HTML of the element you want to add.
-			var temp = "<p>" + data[i].name + " (" + data[i].state + ") – " + data[i].affiliation + "</p>";
-
-			// 2. Select the div where you want to append your HTML element.
-			$("#candidates").append(temp);
-
-			// jQuery will look for the HTML element with an id="candidates" and then add a new paragraph for each candidate as it loops through the data.
+			// If tabletop succesfully connects with the spreadsheet, it'll execute the "callback" function and pass the data to it.
+			Tabletop.init( { key: public_spreadsheet_url,
+				callback: showInfo,
+				simpleSheet: true } )
 		}
 
 
-		// I'm going to copy the data to the "myData" variable I defined above, so that I can access it later
-		// alternately I could pass it directly to the createMap() function as a parameter.
-		myData = data;
+		// Here's where you'll decide what you want to do with the loaded data.
+		function showInfo(data) {
+			console.log("Data loaded!!! Huzzah!!!\n\n")
 
-
-		// Ok, the main thing is that after you load the data, you want to create the map.
-		// I've put the map creation into a separate function.
-		createMap();
-	}
-
+			// The data is returned as a JSON object (technically, it's an array of JSON objects).
+			console.log("Here's what the data looks like:")
+			console.log(data);
 
 
 
+			console.log("\n\n");
+			console.log("Each row in the spreadsheet is a separate JSON object in the array.")
+			console.log("You can look at specific rows in the data by referencing it by number: console.log(data[3])")
+			console.log(data[3]);
+			console.log("\n\n");
 
-	// =========================
-	// |  Basic Leaflet setup  |
-	// =========================
 
-	function createMap(){
 
-		// Check if the target div where you're going to add map exists.
-		if ($("#map").length){
+			// Let's loop through the data and see what we can do.
+			for (var i = 0; i < data.length; i++){
+				console.log(data[i].name + " — " + data[i].state );
 
+
+				// Using jQuery we can add a paragraph with each politician to the HTML. Here's how:
+
+				// 1. Define the HTML of the element you want to add.
+				var temp = "<p>" + data[i].name + " (" + data[i].state + ") – " + data[i].affiliation + "</p>";
+
+				// 2. Select the div where you want to append your HTML element.
+				$("#politicians").append(temp);
+
+				// jQuery will look for the HTML element with an id="politicians" and then add a new paragraph for each politician as it loops through the data.
+			}
+
+
+			// I'm going to copy the data to the "myData" variable I defined above, so that I can access it later
+			// alternately I could pass it directly to the createMap() function as a parameter.
+			myData = data;
+
+
+			// Ok, the main thing is that after you load the data, you want to create the map.
+			// I've put the map creation into a separate function.
+			createMap();
+		}
+
+
+
+
+
+		// =========================
+		// |  Basic Leaflet setup  |
+		// =========================
+
+		function createMap(){
 
 			// =====================================
 			// |  Define the map tiles (optional)  |
@@ -212,6 +204,8 @@
 
 			// You can find a bunch of tile options here:
 			// https://leaflet-extras.github.io/leaflet-providers/preview/
+
+
 
 
 			// Define the possible tile layers you'd like to add.
@@ -236,14 +230,13 @@
 
 
 
-
 			// ====================
 			// |  Define the map  |
 			// ====================
 			// ... and set any options like zoom restrictions, scroll boundaries, attributions and controls, and add your tiles.
 			map = L.map('map', {
-				maxZoom: 7,
 				minZoom: 2,
+				maxZoom: 7,
 				//maxBounds: [ [22.854, 115.735], [0, 91.117] ], // If you want to restrict where people can go on the map
 				attributionControl: true,
 				scrollWheelZoom: false,
@@ -265,11 +258,11 @@
 
 
 
-			// ======================
-			// |  Add the markers   |
-			// ======================
 
-			// Define icons.
+
+			// ==============================
+			// |  Define the custom icons.  |
+			// ==============================
 
 			iconBlue = L.icon({
 				iconUrl: './img/dot--blue.png',
@@ -277,6 +270,7 @@
 				iconAnchor: [8, 8],
 				popupAnchor: [0, -4]
 			})
+
 			iconRed = L.icon({
 				iconUrl: './img/dot--red.png',
 				iconSize: [16, 16],
@@ -286,55 +280,68 @@
 
 
 
-			//Define the layer with all of the markers
+
+			// ======================
+			// |  Add the markers   |
+			// ======================
+
+			// Define the layer where we'll store all of the markers
 			layerGroup = L.featureGroup().addTo(map);
 
-			var data = myData;
-			for (var i = 0; i < data.length; i++){
-				console.log("looping data for markers")
 
-				var currentCoordinates = data[i].coordinates;
-				var currentCoordinatesArray = currentCoordinates.split(", ")
-				console.log(currentCoordinatesArray)
+			// Begin looping over the data to create markers
+			for (var i = 0; i < myData.length; i++){
 
-				popupWindowMarkup = "<a href='#' class='voa__map__popup__link'><img src='https://placehold.it/40x40'/><div class='voa__popup-text'><h3 class='voa__label small'>" + data[i].state + "</h3><h3>" + data[i].name + "</h3></div></a>";
+				// Leaflet expects coordinates to be stored as an array in the format of [lat, lng].
+				// The coordinates from  the spreadsheet, come over as a string.
+				// We'll use the JavaScript method `.split()` to split the the string into an array.
+				var coordinatesString = myData[i].coordinates;
+				var currentCoordinatesArray = coordinatesString.split(", ")
 
+
+
+				// Reset the default icon.
 				var currentIcon = iconRed
 
-				if (data[i].affiliation == "Democrat"){
+				// Check the party affiliation, if the current politician is a Democrat we'll switch the icon. 
+				if (myData[i].affiliation == "Democrat"){
 					currentIcon = iconBlue;
-					console.log(data[i].name + " - " + data[i].affiliation);
 				}
+
+
+
+				// Define the popup window for the marker.
+				popupWindowMarkup = "<img src='https://placehold.it/40x40'/><div class='voa__popup-text'><h3 class='voa__label small'>" + myData[i].state + "</h3><p>" + myData[i].name + "</p></div>";
+
+
 
 				// Define the marker
 				marker = new L.marker([currentCoordinatesArray[0],currentCoordinatesArray[1]], {
-						icon: currentIcon,//custom icon could go here
-						title: data[i].name,
-						name: data[i].name,
-						region: data[i].state,
+						icon: currentIcon,
+						name: myData[i].name, // this is custom parameter. You can add more as you need.
 						currentNumber: i,
-					})
-					.bindPopup(popupWindowMarkup)
+					}).bindPopup(popupWindowMarkup)
 
 
+				// Add the custom onClick() function for the marker.
 				marker.on('click', onClick);
 
+
+				// Add the current marker to the layer group.
 				layerGroup.addLayer(marker)
 
 			}
 
 			function onClick(e){
-				//var currentZoom =  mapData.getZoom();
-				//mapData.setView(e.target.getLatLng(),currentZoom);//6);
-				//mapData.setView(e.target.getLatLng(),5);//6);
-				console.log("clicked marker. Region: " + e.target.options.region);
+				console.log("clicked marker. Name: " + e.target.options.name);
+
+				// When the user clicks on the marker zoom
+				mapData.setView(e.target.getLatLng(),5);//6);
 			}
 
-		};
+		}
 
-	}
-
-</script>
+	</script>
 
 
 </body>
