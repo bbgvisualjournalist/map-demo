@@ -16,9 +16,12 @@
 	<script type="text/javascript" src='https://projects.voanews.com/js/resources/leaflet/js/leaflet.js'></script>
 	<link rel="stylesheet" type="text/css" href="https://projects.voanews.com/js/resources/leaflet/css/leaflet.css">
 
+	<script type="text/javascript" src='script.js'></script>
+
 
 	<!-- define your CSS -->
 	<style type="text/css">
+
 		body {
 			font-family: Arial, sans-serif;
 		}
@@ -34,6 +37,36 @@
 			min-height: 450px;
 			width: 100%;
 		}
+
+		.voa__politicians-container {
+			box-shadow: 1px 1px 5px rgba(20,20,20,.3) inset;
+			padding: 15px;
+		}
+
+		@media only screen and (min-width: 640px) {
+			.voa__clear:before,
+			.voa__clear:after {
+				content: " ";
+				display: table;
+				margin-bottom: 40px;
+			}
+
+			.voa__clear:after {
+				clear: both;
+			}
+
+
+			.voa__map-container {
+				float: left;
+				width: 60%;
+			}
+			.voa__politicians-container {
+				float: right;
+				max-height: 450px;
+				width: 35%;
+			}
+		}
+
 	</style>
 
 </head>
@@ -43,306 +76,48 @@
 
 		<h1>Map demo</h1>
 
-		<p>Here's a mockup showing how to use jQuery, TabletopJS and Leaflet to load in some external data and then map it. Open the browser's console window and you can watch the data get loaded. (The code is liberally commented.)</p>
+		<p>Here's a mockup showing how to use jQuery, TabletopJS and Leaflet to load in some external data from <a href="https://docs.google.com/spreadsheets/d/e/2PACX-1vT7PWwqAJk3clfTNWhe57-cICeFWNfaIXpj_47Yxf46Cp4U53Hfu7vD0qT-EpxxFTJRR7pH6V2UGqcy/pubhtml">a Google Spreadsheet</a> and then map it. Open the browser's console window and you can watch the data get loaded. (The code is liberally commented.)</p>
 
 
-		<!-- here's the div where we'll stick the map when we're ready to add it to the page -->
-		<div id="map" class="voa__map-container"></div>
+
+		<div class="voa__clear">
+		
+			<div id="map" class="voa__map-container">
+				<!-- here's the div where we'll stick the map when we're ready to add it to the page -->
+			</div><!--
 
 
-		<!-- here's the div where we'll loop through the politicians and add their names -->
-		<div id="politicians"></div>
+		 --><div class="voa__politicians-container">
+				<h3>The politicians</h3>
+
+				<div id="politicians">
+					<!-- here's the div where we'll loop through the politicians and add their names -->
+				</div>
+			</div>
+
+		</div>
+
+
+
+
+
+		<h3>The outline</h3>
+		<p>Here are the steps we're going to take</p>
+
+		<ol>
+			<li>Define the global variables</li>
+			<li>Wait for the page to load</li>
+			<li>Load the spreadsheet data</li>
+			<li>When the data is returned, build the map</li>
+			<ul>
+				<li>Define the tile set</li>
+				<li>Create the map (and set the initial focus)</li>
+				<li>Define any custom icons</li>
+				<li>Loop through the data to add markers</li>
+			</ul>
+		</ol>
 
 	</div>
-
-
-
-
-
-
-
-
-
-	<!-- You could put your JS in a separate file or you can put it directly in the HTML -->
-
-	<script type="text/javascript">
-
-		// =============================================
-		// |  Define your global variables at the top. |
-		// =============================================
-
-		// Variables defined here are "global", which means you'll have access to them throughout your code.
-		var myData;
-
-		var map;
-		var marker;
-		var layerGroup;
-		var iconDefault;
-		var tiles = [];
-
-		var defaultBounds = [
-			[49, -65],
-			[16, -135]
-		]
-
-
-		// Define your spreadsheet ID
-		var public_spreadsheet_url = '14G3g_Jpyih4AudKKJu4i_YWSYBBJxKBlzjVATdzgDic';
-
-		// This is the string of characters in the URL of a Google Spreadsheet.
-		// You have to "publish" the spreadsheet first in order for it to be public and accessible to your code.
-		// To publish: >File>Publish to the web> and select "Entire document"
-		// (Obviously don't do this with sensitive data.)
-
-
-
-
-
-
-
-
-		// ==============================================
-		// |  Wait for the page to load, then do stuff  |
-		// ==============================================
-
-		// This is a basic jQuery function that waits until the page (but not the images) has loaded.
-		// After the page is loaded, it'll execute whatever code you have inside of it.
-
-		$(document).ready(function(){
-			console.log("Everything is loaded and we're ready to do stuff\n\n");
-
-			// Let's start by calling the function to try to load the spreadsheet data.
-			// If you scroll down you can see where we define that function.
-			loadSpreadsheet();
-		});
-
-
-
-
-
-
-
-		// ============================
-		// |  Basic tabletopJS setup  |
-		// ============================
-		function loadSpreadsheet() {
-			console.log("Trying to load spreadsheet.\n(cross your fingers)\n\n")
-
-			// Here's where we try to initialize Tabletop.js
-			// We defined that public spreadsheet up at the top 
-			// (but we could just paste that string where it says "public_spreadsheet_url")
-
-			// If tabletop succesfully connects with the spreadsheet, it'll execute the "callback" function and pass the data to it.
-			Tabletop.init( { key: public_spreadsheet_url,
-				callback: showInfo,
-				simpleSheet: true } )
-		}
-
-
-		// Here's where you'll decide what you want to do with the loaded data.
-		function showInfo(data) {
-			console.log("Data loaded!!! Huzzah!!!\n\n")
-
-			// The data is returned as a JSON object (technically, it's an array of JSON objects).
-			console.log("Here's what the data looks like:")
-			console.log(data);
-
-
-
-			console.log("\n\n");
-			console.log("Each row in the spreadsheet is a separate JSON object in the array.")
-			console.log("You can look at specific rows in the data by referencing it by number: console.log(data[3])")
-			console.log(data[3]);
-			console.log("\n\n");
-
-
-
-			// Let's loop through the data and see what we can do.
-			for (var i = 0; i < data.length; i++){
-				console.log(data[i].name + " — " + data[i].state );
-
-
-				// Using jQuery we can add a paragraph with each politician to the HTML. Here's how:
-
-				// 1. Define the HTML of the element you want to add.
-				var temp = "<p>" + data[i].name + " (" + data[i].state + ") – " + data[i].affiliation + "</p>";
-
-				// 2. Select the div where you want to append your HTML element.
-				$("#politicians").append(temp);
-
-				// jQuery will look for the HTML element with an id="politicians" and then add a new paragraph for each politician as it loops through the data.
-			}
-
-
-			// I'm going to copy the data to the "myData" variable I defined above, so that I can access it later
-			// alternately I could pass it directly to the createMap() function as a parameter.
-			myData = data;
-
-
-			// Ok, the main thing is that after you load the data, you want to create the map.
-			// I've put the map creation into a separate function.
-			createMap();
-		}
-
-
-
-
-
-		// =========================
-		// |  Basic Leaflet setup  |
-		// =========================
-
-		function createMap(){
-
-			// =====================================
-			// |  Define the map tiles (optional)  |
-			// =====================================
-
-			// With Leaflet you can select the source(s) for the tiles in your map.
-			// these tiles can be stacked, so that you can have a base layer that looks watercolored
-			// and a separate layer that has all of the labels and lines.
-
-			// You can find a bunch of tile options here:
-			// https://leaflet-extras.github.io/leaflet-providers/preview/
-
-
-
-
-			// Define the possible tile layers you'd like to add.
-			var Esri_WorldTerrain = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Terrain_Base/MapServer/tile/{z}/{y}/{x}', {
-				attribution: 'Tiles &copy; Esri &mdash; Source: USGS, Esri, TANA, DeLorme, and NPS',
-				maxZoom: 13
-			});
-
-			var Stamen_TonerHybrid = L.tileLayer('https://stamen-tiles-{s}.a.ssl.fastly.net/toner-hybrid/{z}/{x}/{y}{r}.{ext}', {
-				attribution: 'Map tiles by <a href="http://stamen.com">Stamen Design</a>, <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a> &mdash; Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-				subdomains: 'abcd',
-				minZoom: 0,
-				maxZoom: 20,
-				ext: 'png'
-			});
-
-			// Add the tile layers to your "tiles" array.
-			// If you forget (or choose not) to add any tile layers, you're still creating a map
-			// ... but it'll look pretty empty unless you manually draw some geographic shapes on it.
-			tiles = [Esri_WorldTerrain, Stamen_TonerHybrid];
-
-
-
-
-			// ====================
-			// |  Define the map  |
-			// ====================
-			// ... and set any options like zoom restrictions, scroll boundaries, attributions and controls, and add your tiles.
-			map = L.map('map', {
-				minZoom: 2,
-				maxZoom: 7,
-				//maxBounds: [ [22.854, 115.735], [0, 91.117] ], // If you want to restrict where people can go on the map
-				attributionControl: true,
-				scrollWheelZoom: false,
-				layers: tiles
-			});
-
-
-
-
-			// =========================================
-			// |  Define the initial focus of the map  |
-			// =========================================
-
-			// You can either set a coordinate point (like a city) to focus on (and specify a zoom level e.g. 5)
-			//map.setView([51.505, -0.09], 5);
-
-			// ... or you specify a coordinate box (e.g. the coordinates that bound the United States)
-			map.fitBounds(defaultBounds);
-
-
-
-
-
-			// ==============================
-			// |  Define the custom icons.  |
-			// ==============================
-
-			iconBlue = L.icon({
-				iconUrl: './img/dot--blue.png',
-				iconSize: [16, 16],
-				iconAnchor: [8, 8],
-				popupAnchor: [0, -4]
-			})
-
-			iconRed = L.icon({
-				iconUrl: './img/dot--red.png',
-				iconSize: [16, 16],
-				iconAnchor: [8, 8],
-				popupAnchor: [0, -4]
-			})
-
-
-
-
-			// ======================
-			// |  Add the markers   |
-			// ======================
-
-			// Define the layer where we'll store all of the markers
-			layerGroup = L.featureGroup().addTo(map);
-
-
-			// Begin looping over the data to create markers
-			for (var i = 0; i < myData.length; i++){
-
-				// Leaflet expects coordinates to be stored as an array in the format of [lat, lng].
-				// The coordinates from  the spreadsheet, come over as a string.
-				// We'll use the JavaScript method `.split()` to split the the string into an array.
-				var coordinatesString = myData[i].coordinates;
-				var currentCoordinatesArray = coordinatesString.split(", ")
-
-
-
-				// Reset the default icon.
-				var currentIcon = iconRed
-
-				// Check the party affiliation, if the current politician is a Democrat we'll switch the icon. 
-				if (myData[i].affiliation == "Democrat"){
-					currentIcon = iconBlue;
-				}
-
-
-
-				// Define the popup window for the marker.
-				popupWindowMarkup = "<img src='https://placehold.it/40x40'/><div class='voa__popup-text'><h3 class='voa__label small'>" + myData[i].state + "</h3><p>" + myData[i].name + "</p></div>";
-
-
-
-				// Define the marker
-				marker = new L.marker([currentCoordinatesArray[0],currentCoordinatesArray[1]], {
-						icon: currentIcon,
-						name: myData[i].name, // this is custom parameter. You can add more as you need.
-						currentNumber: i,
-					}).bindPopup(popupWindowMarkup)
-
-
-				// Add the custom onClick() function for the marker.
-				marker.on('click', onClick);
-
-
-				// Add the current marker to the layer group.
-				layerGroup.addLayer(marker)
-
-			}
-
-			function onClick(e){
-				console.log("clicked marker. Name: " + e.target.options.name);
-
-				// When the user clicks on the marker zoom
-				mapData.setView(e.target.getLatLng(),5);//6);
-			}
-
-		}
-
-	</script>
-
 
 </body>
 </html>

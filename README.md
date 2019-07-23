@@ -4,10 +4,12 @@ Tutorial on building a basic Leaflet map with data from Google spreadsheet via T
 
 ### Resources ###
 
-* [Leaflet Quick Start tutorial](https://leafletjs.com/examples/quick-start/)
+* [Leaflet tutorials](https://leafletjs.com/examples.html)
 * [Tabletop.js](https://github.com/jsoma/tabletop)
 * [jQuery Basics](http://jqfundamentals.com/chapter/jquery-basics)
 
 
+### Spreadsheet best practices ###
 
-
+* Keep the column labels simple and consistent. I generally keep my labels lowercase or camelCase without spaces (and no special characters).
+* Make sure that individual columns of data are consistently formatted, so that columns of coordinates (or dates) are all formatted the same way (within the column).
