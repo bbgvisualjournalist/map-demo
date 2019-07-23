@@ -1,5 +1,5 @@
 # map-demo
-Tutorial on building a basic Leaflet map with data from Google spreadsheet via TabletopJS. 
+Demonstration showing how to create a basic Leaflet map with data from Google spreadsheet via TabletopJS. You can see a [preview here](https://bbgvisualjournalist.github.io/map-demo/)
 
 
 ### Resources ###
