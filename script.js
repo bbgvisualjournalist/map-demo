@@ -258,7 +258,7 @@ function createMap(){
 
 
 		// Define the popup window for the marker.
-		popupWindowMarkup = "<img src='https://placehold.it/120x120'/><div class='voa__popup-text'><h3 class='voa__label small'>" + myData[i].state + "</h3><p>" + myData[i].name + "</p></div>";
+		popupWindowMarkup = "<img src='" + myData[i].photo + "'/><div class='voa__popup-text'><h3 class='voa__label small'>" + myData[i].state + "</h3><p>" + myData[i].name + "</p></div>";
 
 
 
@@ -286,5 +286,5 @@ function createMap(){
 		map.setView(e.target.getLatLng(), 5);
 	}
 
-}
 
+}
