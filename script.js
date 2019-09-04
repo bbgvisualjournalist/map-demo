@@ -13,7 +13,7 @@ var tiles = [];
 
 
 // Define the spreadsheet ID
-var public_spreadsheet_url = '14G3g_Jpyih4AudKKJu4i_YWSYBBJxKBlzjVATdzgDic';
+var public_spreadsheet_url = '1Iu9FPvZuBGmgmvG9ISXoF-GPlQUPGEOnA2btHvdXldg';// '14G3g_Jpyih4AudKKJu4i_YWSYBBJxKBlzjVATdzgDic';
 
 // This is the string of characters in the URL of a Google Spreadsheet.
 // You have to "publish" the spreadsheet first in order for it to be public and accessible to your code.
@@ -258,7 +258,7 @@ function createMap(){
 
 
 		// Define the popup window for the marker.
-		popupWindowMarkup = "<img src='" + myData[i].photo + "'/><div class='voa__popup-text'><h3 class='voa__label small'>" + myData[i].state + "</h3><p>" + myData[i].name + "</p></div>";
+		popupWindowMarkup = "<img src='" + myData[i].mugshot + "'/><div class='voa__popup-text'><h3 class='voa__label small'>" + myData[i].state + "</h3><p>" + myData[i].name + "</p></div>";
 
 
 
